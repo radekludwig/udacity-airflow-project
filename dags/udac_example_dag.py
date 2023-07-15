@@ -50,33 +50,51 @@ stage_songs_to_redshift = StageToRedshiftOperator(
 
 load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id = 'redshift',
+    sql_query = SqlQueries.songplay_table_insert,
 )
 
 load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id = 'redshift',
+    table = 'users',
+    sql_query = SqlQueries.user_table_insert,
+    delete_load = False
 )
 
 load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
-    dag=dag
+    dag=dag,
+    redshift_conn_id = 'redshift',
+    table = 'songs',
+    sql_query = SqlQueries.song_table_insert,
+    delete_load = False
 )
 
 load_artist_dimension_table = LoadDimensionOperator(
-    task_id='Load_artist_dim_table',
-    dag=dag
+    task_id='load_artist_dim_table',
+    dag=dag,
+    redshift_conn_id = 'redshift',
+    table = 'artists',
+    sql_query = SqlQueries.artist_table_insert,
+    delete_load = False
 )
 
 load_time_dimension_table = LoadDimensionOperator(
-    task_id='Load_time_dim_table',
-    dag=dag
+    task_id='load_time_dim_table',
+    dag=dag,
+    redshift_conn_id = 'redshift',
+    table = 'time',
+    sql_query = SqlQueries.artist_table_insert,
+    delete_load = False
 )
 
 run_quality_checks = DataQualityOperator(
-    task_id='Run_data_quality_checks',
+    task_id='run_data_quality_checks',
     dag=dag
-    # TODO write checks to be included in the checks list
+    # todo write checks to be included in the checks list
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
