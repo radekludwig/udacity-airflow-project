@@ -1,6 +1,7 @@
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
+import operator
 
 class DataQualityOperator(BaseOperator):
 
@@ -8,15 +9,32 @@ class DataQualityOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self,
-                 # Define your operators params (with defaults) here
-                 # Example:
-                 # conn_id = your-connection-name
+                 redshift_conn_id='',
+                 tables=[],
+                 checks=[],
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
-        # Map params here
-        # Example:
-        # self.conn_id = conn_id
+        self.redshift_conn_id = redshift_conn_id
+        self.tables = tables
+        self.checks = checks
 
+    def get_truth(inp, relate, cut):
+        ops = {
+            '>': operator.gt,
+            '<': operator.lt,
+            '>=': operator.ge,
+            '<=': operator.le,
+            '==': operator.eq,
+            '!=': operator.ne
+        }
+        return ops[relate](inp, cut)
     def execute(self, context):
-        self.log.info('DataQualityOperator not implemented yet')
+        self.log.info(f'Running checks on {self.tables} tables')
+        redshift = PostgresHook(postgres_conn_id = self.redshift_conn_id)
+        for i, check in enumerate(self.checks):
+            for check_sql, operator, expected_result in check.items():
+                check_result = redshift.get_records(check_sql)
+                if self.get_truth(check_result, operator, expected_result) is False:
+                    raise ValueError(f'Data quality check nr {i} failed')
+
