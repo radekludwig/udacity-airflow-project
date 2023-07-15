@@ -19,14 +19,12 @@ class StageToRedshiftOperator(BaseOperator):
                  table='',
                  s3_bucket='',
                  s3_key='',
-                 json_path='',
                  json_format='',
                  *args, **kwargs):
 
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
         self.aws_credential_id  = aws_credentials_id
         self.redshift_conn_id = redshift_conn_id
-        self.json_format = json_format
         self.json_path = json_path
         self.s3_bucket = s3_bucket
         self.s3_key = s3_key
@@ -46,7 +44,7 @@ class StageToRedshiftOperator(BaseOperator):
                                                                   credentials.secret_key, 'auto')
         else:
             formatted_copy_query = StageToRedshiftOperator.format(self.table, s3_path, credentials.access_key,\
-                                                                  credentials.secret_key, self.json_format )
+                                                                  credentials.secret_key, self.json_path)
         self.log.info(f'Running copy query on {self.table} table')
         redshift.run(formatted_copy_query)
 
