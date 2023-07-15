@@ -47,5 +47,6 @@ class StageToRedshiftOperator(BaseOperator):
         else:
             formatted_copy_query = StageToRedshiftOperator.format(self.table, s3_path, credentials.access_key,\
                                                                   credentials.secret_key, self.json_format )
+        self.log.info(f'Running copy query on {self.table} table')
         redshift.run(formatted_copy_query)
 
