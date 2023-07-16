@@ -93,8 +93,12 @@ load_time_dimension_table = LoadDimensionOperator(
 
 run_quality_checks = DataQualityOperator(
     task_id='run_data_quality_checks',
-    dag=dag
-    # todo write checks to be included in the checks list
+    dag=dag,
+    redshift_conn_id='redshift',
+    checks=[
+        {'check_sql': 'SELECT COUNT(*) FROM songplays', 'operator': '>', 'expected_result': 0},
+        {'check_sql': 'SELECT COUNT(*) FROM artist', 'operator': '>', 'expected_result': 0}
+    ],
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
