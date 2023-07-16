@@ -28,11 +28,11 @@ class DataQualityOperator(BaseOperator):
         }
         return ops[relate](inp, cut)
     def execute(self, context):
-        self.log.info(f'Running checks on {self.tables} tables')
+        self.log.info(f'Running checks on tables')
         redshift = PostgresHook(postgres_conn_id = self.redshift_conn_id)
         for i, check in enumerate(self.checks):
             for check_sql, operator, expected_result in check.items():
                 check_result = redshift.get_records(check_sql)
                 if self.get_truth(check_result, operator, expected_result) is False:
                     raise ValueError(f'Data quality check nr {i} failed')
-
+        self.log.info(f'Checks passed')
