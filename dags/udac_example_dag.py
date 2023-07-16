@@ -21,7 +21,7 @@ default_args = {
 dag = DAG('udac_example_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
-          end_date=datetime(2019, 1, 14)
+          end_date=datetime(2019, 1, 14),
           schedule_interval='0 * * * *'
         )
 
