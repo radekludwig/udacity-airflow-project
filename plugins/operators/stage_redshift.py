@@ -38,7 +38,8 @@ class StageToRedshiftOperator(BaseOperator):
         self.log.info("Clearing data from destination Redshift table")
         redshift.run("DELETE FROM {}".format(self.table))
 
-        s3_path = "s3://{}/{}".format(self.s3_bucket, self.s3_key)
+        generated_s3_key = self.s3_key.format(**context)
+        s3_path = "s3://{}/{}".format(self.s3_bucket, generated_s3_key)
         if self.json_path == '':
             formatted_copy_query = StageToRedshiftOperator.sql_copy.format(self.table, s3_path, credentials.access_key,\
                                                                   credentials.secret_key, 'auto')

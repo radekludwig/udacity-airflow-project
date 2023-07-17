@@ -22,7 +22,7 @@ class LoadDimensionOperator(BaseOperator):
     def execute(self, context):
         redshift = PostgresHook(postgres_conn_id = self.redshift_conn_id)
         if self.delete_load:
-            self.log.info(f'Delete_load set to True. Deleting data in the table {table}')
+            self.log.info(f'Delete_load set to True. Deleting data in the table {self.table}')
             redshift.run(f'TRUNCATE {self.table}')
-        self.log.info(f'Inserting data into {table} table')
-        redshift.run(self.sql_query)
+        self.log.info(f'Inserting data into {self.table} table')
+        redshift.run(f'INSERT INTO {self.table} {self.sql_query}')
