@@ -99,12 +99,13 @@ run_quality_checks = DataQualityOperator(
     redshift_conn_id='redshift',
     checks=[
         {'check_sql': 'SELECT COUNT(*) FROM songplays', 'operator': '>', 'expected_result': 0},
-        {'check_sql': 'SELECT COUNT(*) FROM artist', 'operator': '>', 'expected_result': 0}
+        {'check_sql': 'SELECT COUNT(*) FROM artists', 'operator': '>', 'expected_result': 0}
     ],
 )
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
-start_operator >> [stage_songs_to_redshift, stage_events_to_redshift] >> load_songplays_table
-load_songplays_table >> [load_song_dimension_table, load_user_dimension_table, load_artist_dimension_table, load_time_dimension_table] >> run_quality_checks
+start_operator >> [stage_songs_to_redshift, stage_events_to_redshift] >>\
+load_songplays_table >> [load_song_dimension_table, load_user_dimension_table,\
+                         load_artist_dimension_table, load_time_dimension_table] >>\
 run_quality_checks >> end_operator

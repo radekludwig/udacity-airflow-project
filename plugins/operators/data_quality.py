@@ -18,6 +18,9 @@ class DataQualityOperator(BaseOperator):
         self.checks = checks
 
     def get_truth(self, inp, relate, cut):
+        '''
+        Creates a logical comparison with the operator provided as a symbol
+        '''
         ops = {
             '>': operator.gt,
             '<': operator.lt,
@@ -31,8 +34,7 @@ class DataQualityOperator(BaseOperator):
         self.log.info(f'Running checks on tables')
         redshift = PostgresHook(postgres_conn_id = self.redshift_conn_id)
         for i, check in enumerate(self.checks):
-            for check_sql, operator, expected_result in check.items():
-                check_result = redshift.get_records(check_sql)
-                if self.get_truth(check_result, operator, expected_result) is False:
-                    raise ValueError(f'Data quality check nr {i} failed')
+            check_result = int(redshift.get_first(check['check_sql'])[0])
+            if self.get_truth(check_result, check['operator'], check['expected_result']) is False:
+                raise ValueError(f'Data quality check nr {i} failed')
         self.log.info(f'Checks passed')
