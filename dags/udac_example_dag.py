@@ -89,7 +89,7 @@ load_time_dimension_table = LoadDimensionOperator(
     dag=dag,
     redshift_conn_id='redshift',
     table='time',
-    sql_query=SqlQueries.artist_table_insert,
+    sql_query=SqlQueries.time_table_insert,
     delete_load=False
 )
 

@@ -17,7 +17,7 @@ class DataQualityOperator(BaseOperator):
         self.redshift_conn_id = redshift_conn_id
         self.checks = checks
 
-    def get_truth(inp, relate, cut):
+    def get_truth(self, inp, relate, cut):
         ops = {
             '>': operator.gt,
             '<': operator.lt,
