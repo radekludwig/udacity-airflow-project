@@ -23,7 +23,7 @@ class StageToRedshiftOperator(BaseOperator):
                  *args, **kwargs):
 
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
-        self.aws_credential_id  = aws_credentials_id
+        self.aws_credentials_id  = aws_credentials_id
         self.redshift_conn_id = redshift_conn_id
         self.json_path = json_path
         self.s3_bucket = s3_bucket
